@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Quantum Automata," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="整理一波量子有限自动机（Quantum Finite Automata）的语言识别能力。 基于综述文献《Automata and Quantum Computing》所梳理。  量子有限自动机模型Quantum computation is a generalization of classical computation and QFAs should be able to simulate c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Language Recognition of Quantum Automata">
+<meta property="og:url" content="http://example.com/2022/04/19/Language-Recognition-of-Quantum-Automata/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="整理一波量子有限自动机（Quantum Finite Automata）的语言识别能力。 基于综述文献《Automata and Quantum Computing》所梳理。  量子有限自动机模型Quantum computation is a generalization of classical computation and QFAs should be able to simulate c">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-19T12:18:08.000Z">
+<meta property="article:modified_time" content="2022-05-20T14:01:11.413Z">
+<meta property="article:author" content="Zero-Star">
+<meta property="article:tag" content="Quantum Automata">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2022/04/19/Language-Recognition-of-Quantum-Automata/"/>
+
+
+
+
+
+  <title>Language Recognition of Quantum Automata | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/19/Language-Recognition-of-Quantum-Automata/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/wanzi.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Language Recognition of Quantum Automata</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-04-19T20:18:08+08:00">
+                2022-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/quantum-automata/" itemprop="url" rel="index">
+                    <span itemprop="name">quantum automata</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>整理一波量子有限自动机（Quantum Finite Automata）的语言识别能力。</p>
+<p>基于综述文献<a href="https://arxiv.org/abs/1507.01988">《Automata and Quantum Computing》</a>所梳理。</p>
+<hr>
+<h1 id="量子有限自动机模型"><a href="#量子有限自动机模型" class="headerlink" title="量子有限自动机模型"></a>量子有限自动机模型</h1><p><em><strong>Quantum computation is a generalization of classical computation and QFAs should be able to simulate classical finite automaton, if we define QFAs in sufficiently general way.</strong></em></p>
+<blockquote>
+<p><strong>1QFA</strong>可以由一个五元组$(\Sigma, Q, \lbrace T_\sigma | \sigma\in\Sigma\rbrace, q_1, R)$表示，其中：</p>
+<blockquote>
+<ul>
+<li>$Q$ 是一个有限经典状态集合。定义 <strong>1QFA</strong> 的状态空间为希尔伯特空间 $\rm{H}$ 且满足 $dim(\rm{H})&#x3D;|Q|$ ，该空间下的基本状态集合为 $\lbrace |q\rangle | q\in Q \rbrace$ 。那么 <strong>1QFA</strong> 的状态可以是基态下的任意叠加态，即 $|\psi\rangle&#x3D;\Sigma_{q\in Q}\alpha_q |q\rangle$ 且满足 $\Sigma_{q \in Q}|\alpha_q|^2&#x3D;1$ 。对于复合状态模型下，<strong>1QFA</strong> 的状态可以是纯态的混合态，即可以表示为综系$(p_i,|\psi_i\rangle)$；</li>
+<li>$|\psi_0\rangle&#x3D;|q_1\rangle$ 是量子有限自动机的初始状态；</li>
+<li>对于任何一个读入字符 $\sigma \in \Sigma$ ，都有一个对应的转移算子 $T_\sigma$ 作用在当前的量子状态上；</li>
+<li>$R$ 定义了 <strong>1QFA</strong> 接收读入字符串的规则。通常， $R$ 由接收状态集合 $Q_{acc}\subseteq Q$ 给定。</li>
+</ul>
+</blockquote>
+</blockquote>
+<p>主流的单向量子有限自动机模型 <strong>One-way Quantum Finite Automata</strong> (<strong>1QFA</strong>) 根据限制条件(通常是状态转移规则和自动机接收条件)的不同分为以下几类（依次从 <em>restricted</em> 到 <em>general</em>）：</p>
+<ol>
+<li><strong>Moore-Crutchfield quantum finite automaton (MCQFA)</strong><ul>
+<li>测量一次(measured-once)模型，即在模型读完终结字符后，对最终量子状态进行测量操作；</li>
+<li>转移算子由酉算子(Unitary Operator) $U_\sigma$ 构成；</li>
+<li>读完输入字符串后，进行测量操作，如果得到的输出结果(measurement outcome)落在接收状态集合中，那么该字符串被接收。</li>
+</ul>
+</li>
+<li><strong>Kondacs-Watrous quantum finite automaton (KWQFA)</strong><ul>
+<li>测量多次(measured-many)模型，即在每次读入一个字符，执行完对应转移算子操作后，都对当前的量子状态执行一次测量操作；</li>
+<li>转移算子由酉算子(Unitary Operator) $U_\sigma$ 构成；</li>
+<li>字符串 $w&#x3D;w_1w_2\ldots w_k$，每读入一个字符进行相应的转移算子操作后执行测量，对每次的测量结果 $m_i$ 进行判定：<ul>
+<li>如果 $m_i$ 落入接收状态(accepting states)或者拒绝状态(rejecting states)集合中，自动机计算结束；</li>
+<li>如果 $m_i$ 落入不间断状态(non-halting states)集合中且 $i&lt;k$，自动机继续读入下一个字符，计算继续；</li>
+<li>如果 $m_i$ 落入不间断状态集合中，但是 $i&#x3D;k$，即此时测量是最后一次，那么自动机也停止计算，该字符串定义为被拒绝。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Latvian quantum finite automaton (LaQFA)</strong><ul>
+<li>测量一次(measured-once)模型；</li>
+<li>转移算子由一系列酉算子($U_i$)和测量算子($M_i$)组成 $T_\sigma&#x3D;U_1,M_1,\ldots,U_m,M_m$，但是该测量结果对计算过程不产生任何影响；<blockquote>
+<p><em>一系列酉算子和测量算子复合可以找到一个等价的完全正超算子(completely positive super-operator)，同样一个完全正超算子可以拆分成一系列酉算子和测量算子的复合。</em></p>
+</blockquote>
+</li>
+<li>读完输入字符串后，进行测量操作，如果得到的输出结果落在接收状态集合中，那么该字符串被接收。</li>
+</ul>
+</li>
+<li><strong>Nayak quantum finite automata (NaQFA)</strong><ul>
+<li>测量多次(measured-many)模型；</li>
+<li>转移算子由一系列酉算子($U_i$)和测量算子($M_i$)组成 $T_\sigma&#x3D;U_1,M_1,\ldots,U_m,M_m$；</li>
+<li>字符串 $w&#x3D;w_1w_2\ldots w_k$，每读入一个字符进行相应的转移算子操作后执行测量，对每次转移算子中最后一次测量的输出结果 $m_i$ 进行判定<font color="red"> (待确认是否由最后一次测量输出结果判定)</font>：<ul>
+<li>如果 $m_i$ 落入接收状态或者拒绝状态集合中，自动机计算结束；</li>
+<li>如果 $m_i$ 落入不间断状态集合中且 $i&lt;k$，自动机继续读入下一个字符，计算继续；</li>
+<li>如果 $m_i$ 落入不间断状态集合中，但是 $i&#x3D;k$，即此时测量是最后一次，那么自动机也停止计算，该字符串定义为被拒绝。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>General one-way quantum finite automaton (1QFA)</strong><ul>
+<li>测量多次(measured-many)模型；</li>
+<li>转移算子由一系列酉算子($U_i$)和测量算子($M_i$)组成 $T_\sigma&#x3D;U_1,M_1,\ldots,U_m,M_m$；</li>
+<li>其中每个 $U_i$ 或是 $M_i$ 都可能由上一次测量 $M_{i-1}$ 的输出结果来决定。<blockquote>
+<p><strong>1QFA</strong> 在研究中通常以不同的形式出现，例如：<strong>quantum finite automaton with ancilla qubits (QFA-A)<strong>，</strong>fully quantum finite automaton (CiQFA)<strong>，</strong>quantum finite automatom with control language (QFA-CL)<strong>，</strong>one-way finite automaton with quantum and classical states (1QCFA)</strong> <font color="red"> (待区分模型差别)</font></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<p>从物理操作来看，每次在量子状态转换后进行一次测量操作是比较困难的，因此对测量行为进行限制，即在计算结束后最终执行一次测量，例如模型：<strong>MCQFA</strong> 。同样再对测量行为放松至每次量子状态转换后进行测量，但是测量结果不影响后续转移算子的选择，例如模型：<strong>LaQFA</strong> <font color="red"> (因此我将<strong>LaQFA</strong>归纳入测量一次模型中)</font>。</p>
+<h1 id="量子有限自动机和经典有限自动机之间的互模拟关系"><a href="#量子有限自动机和经典有限自动机之间的互模拟关系" class="headerlink" title="量子有限自动机和经典有限自动机之间的互模拟关系"></a>量子有限自动机和经典有限自动机之间的互模拟关系</h1><h2 id="经典有限自动机回顾"><a href="#经典有限自动机回顾" class="headerlink" title="经典有限自动机回顾"></a>经典有限自动机回顾</h2><ul>
+<li>确定性有限自动机(<strong>deterministic finite automaton DFA</strong>)</li>
+<li>非确定性有限自动机(<strong>nondeterministic finite automaton NFA</strong>)</li>
+<li><font color="red">概率有限自动机(<strong>probabilistic finite automaton PFA</strong>)</font></li>
+<li><font color="red">广义有限自动机(<strong>generalized finite automaton GFA of Turakainen</strong>)</font></li>
+</ul>
+<h2 id="语言识别-Language-recognition"><a href="#语言识别-Language-recognition" class="headerlink" title="语言识别(Language recognition)"></a>语言识别(Language recognition)</h2><blockquote>
+<p>和经典概率有限自动机一样，量子有限自动机在进行测量行为后，以一定概率塌缩到测量子空间上。因此，在量子有限自动机的计算过程中，出现概率行为，输入的字符串以概率 $p,p\in [0,1]$ 能够被自动机接收。</p>
+</blockquote>
+<p>令 $M$ 为自动机且 $\lambda \in R$。 定义 $M$ 能够以严格割点(strict cutpoint)或非严格割点(nonstrict cutpoint)识别语言 $L \subseteq \Sigma^*$ 如下：</p>
+<p>$L &#x3D; \lbrace w\in \Sigma^* | f_M(w)&gt;\lambda\rbrace$ 或 $L &#x3D; \lbrace f_M(w)\geq \lambda \rbrace$。</p>
+<ol>
+<li>如果能够找到这样一个割点 $\lambda$ 使得 $L$ 能够被 $M$ 识别，那么我们就称语言 $L\subseteq \Sigma^*$ 能够以 <em>unbounded error</em> 被 $M$ 识别。<blockquote>
+<p>The language $L\subseteq \Sigma^*$ recognized by $M$ with positive or negative one-sided unbounded error is defined as<br>$L&#x3D;\lbrace w\in \Sigma^* | f_M(w)&gt;0 \rbrace$ or $L&#x3D;\lbrace w\in \Sigma^* | f_M(w)&#x3D;1 \rbrace$.</p>
+</blockquote>
+</li>
+<li>我们称语言 $L\subseteq \Sigma^*$ 能够以 <em>error bound $\epsilon$</em> ($0\leq \epsilon &lt; 1&#x2F;2$) 被 $M$ 识别，如果满足：<ul>
+<li>对于任何语言集内的字符串 $w\in L$，都有 $f_M(w)\geq 1-\epsilon$；</li>
+<li>对于任何不属于语言集内的字符串 $w\notin L$，都有 $f_M(w)\leq \epsilon$。</li>
+</ul>
+</li>
+</ol>
+<h2 id="互模拟"><a href="#互模拟" class="headerlink" title="互模拟"></a>互模拟</h2><blockquote>
+<p>Here lists some basic simulation results that relate the power of <strong>1QFA</strong> to the power of their classical counterparts.</p>
+</blockquote>
+<ol>
+<li>给定一个状态个数为 $n$ 的概率有限自动机 $P$，存在一个同样状态个数为 $n$ 的单向量子有限自动机 $M$，使得对于任何字符串 $w\in \Sigma^*$，都有 $f_P(w)&#x3D;f_M(w)$。</li>
+<li>给定一个状态个数为 $n$ 的单向有限自动机 $M$，存在一个同样状态个数为 $n^2$ 的广义有限自动机 $G$，使得对于任何字符串 $w\in \Sigma^*$，都有 $f_M(w)&#x3D;f_G(W)$。</li>
+<li>如果一个语言集 $L$ 能够被状态个数为 $n$ 且过程量子状态仅为纯态的单向量子有限状态机（例如：<strong>MCQFA</strong> 和 <strong>KWQFA</strong>）以 <em>bounded error</em> 接收，那么该语言集同样能够被状态个数为 $2^{O(n)}$ 的单向确定性有限自动机所识别。</li>
+<li>如果一个语言集 $L$ 能够被状态个数为 $n$ 且过程量子状态仅为混合态的单向量子有限状态机（例如：<strong>1QFA</strong>）以 <em>bounded error</em> 接收，那么该语言集同样能够被状态个数为 $2^{O(n^2)}$ 的单向确定性有限自动机所识别。</li>
+</ol>
+<h1 id="指数级降低状态数目"><a href="#指数级降低状态数目" class="headerlink" title="指数级降低状态数目"></a>指数级降低状态数目</h1><blockquote>
+<p><strong>1QFAs</strong> can indeed be exponentially more succinct than <strong>1PFAs</strong>.</p>
+</blockquote>
+<h2 id="Prime-Language"><a href="#Prime-Language" class="headerlink" title="Prime Language"></a>Prime Language</h2><p>我们定义由单字符(unary symbol)构成，并且该字符出现的次数能够被一个质数 $p$ 整除的字符串构成的语言集为 $PRIME_p$，即 $PRIME_p&#x3D;\lbrace a^i | p$ divides $i \rbrace$。</p>
+<h2 id="Succinctness-results"><a href="#Succinctness-results" class="headerlink" title="Succinctness results"></a>Succinctness results</h2><ol>
+<li><p>(i)如果一个质数 $p$，任何一个识别语言集 $PRIME_p$ 的 <strong>1PFA</strong> 有至少 $p$ 个状态；(ii)对任意 $\epsilon &gt; 0$，存在一个状态个数为 <em>O(log(p))</em> 的 <strong>MCQFA</strong> 以 <em>error bound $\epsilon$</em> 来识别相同的语言集 $PRIME_p$。</p>
+<blockquote>
+<p>proof to be added</p>
+</blockquote>
+</li>
+<li><p>对上述证明中的二状态 <strong>MCQFA</strong> 的幅角 $\phi&#x3D; 2\pi k_i&#x2F;p$ 进行选取。已知可用 $d&#x3D;2log(2p&#x2F; \epsilon)$ 个这样的二状态 <strong>MCQFA</strong> 结合，那么可以选取 $d$ 个值 $k_1,\ldots,k_d\in \lbrace 1,\ldots,p-1 \rbrace$ 使得最后结合的 <strong>MCQFA</strong> 能够以至少 $1-\epsilon$ 的概率拒绝所有不属于集合的字符串，即 $a^j \notin L_p$ 其中 $j$ 无法被 $p$ 整除。</p>
+</li>
+<li><p>任何由一元字符(unary alphabet)构成的周期为 $n$ 的周期性语言都可以被状态个数为 $2\sqrt{6n}$ 的 <strong>MCQFA</strong> 以 <em>bounded error</em> 识别。</p>
+<blockquote>
+<p>main idea associated with <strong>Difference Cover for Integer Set</strong> to be added</p>
+</blockquote>
+</li>
+<li><p>存在一个语言集，其由单个字母构成并且周期为 $n$ 可以被状态个数为 $\Omega(\sqrt{n&#x2F;log(n)})$ 的 <strong>MCQFA</strong> 所识别。</p>
+</li>
+<li><p><font color="red">If the $l_1$ norm of the Fourier transform of the characteristic function of L (for a periodic L in one-symbol alphabet) is small, a <strong>1QFA</strong> with a smaller number of states is possible.</font></p>
+</li>
+</ol>
+<blockquote>
+<p><font color="pink">It is still open what is the biggest possible advantage of general <strong>1QFA</strong>s over <strong>1PFA</strong>s or <strong>1DFA</strong>s.</font></p>
+</blockquote>
+<h1 id="各限制模型以有界误差识别语言的能力"><a href="#各限制模型以有界误差识别语言的能力" class="headerlink" title="各限制模型以有界误差识别语言的能力"></a>各限制模型以有界误差识别语言的能力</h1><p>对于带有界误差的语言识别能力，对前面所提出的模型从弱到强依次可以为：</p>
+<p><strong>MCQFA</strong> &lt; **LaQFA** &lt; **KWQFA** $\leq$ **NaQFA** $\leq$ <font color="red"><strong>BiQFA</strong></font> &lt; <strong>1QFA</strong> $\equiv$ <strong>1DFA</strong>$。</p>
+<p>关于 <strong>KWQFA</strong> $\leq$ <strong>NaQFA</strong> 和 <strong>NaQFA</strong> $\leq$ <strong>BiQFA</strong> 是否是严格小于的依然是开放问题。</p>
+<ul>
+<li><strong>MCQFA</strong> 无法识别所有正则语言。</li>
+<li>以 <em>bounded error</em> 识别的 <strong>KWQFA</strong> 可以识别语言类 <font color="red"> <em>BMM</em> </font> ，但是它无法识别某些正则语言，例如 ${ {a,b }^*a }\notin BMM$。如果 <em>error bound</em> <font color="red"> 越接近$\frac{1}{2}$ </font>，那么 <strong>KWQFA</strong> 可以识别更多的语言。</li>
+<li>如果 <strong>minimal 1DFA</strong> 有性质 <em>forbidden constructions</em>，那么它所能识别的语言类无法被任何以 <em>bounded error</em> 识别的 <strong>KWQFA</strong> 所识别。</li>
+<li>任何以 <em>bounded error</em> 被 <strong>BiQFA</strong> 识别的语言都在语言类 <font color="red"><em>ER</em></font>（正则语言类的一个子集）。</li>
+<li><strong>LaQFA</strong> 以及所有比 <strong>LaQFA</strong> 识别能力更强的模型能够识别所有一元正则语言（unary regular language）。</li>
+</ul>
+<h1 id="无界误差、非确定性和交替-Unbounded-error-Nondeterminism-and-Alternation"><a href="#无界误差、非确定性和交替-Unbounded-error-Nondeterminism-and-Alternation" class="headerlink" title="无界误差、非确定性和交替(Unbounded-error, Nondeterminism, and Alternation)"></a>无界误差、非确定性和交替(Unbounded-error, Nondeterminism, and Alternation)</h1><p>在无界误差的情况下，<strong>1PFA</strong> 和 <strong>1QFA</strong> 以及 <strong>GFA</strong> 的语言识别能力是等价的。也就是说，以割点被 <strong>1PFA</strong> 识别的语言同样能够以割点被 <strong>1QFA</strong> 识别；而被 <strong>1QFA</strong>识别的语言同样可以被 <strong>GFA</strong> 识别； 而任何以割点被 <strong>GFA</strong> 识别的语言都是随机的（stochastic）。</p>
+<h1 id="可判定和不可判定结果-Decidability-and-Undecidability-Results"><a href="#可判定和不可判定结果-Decidability-and-Undecidability-Results" class="headerlink" title="可判定和不可判定结果(Decidability and Undecidability Results)"></a>可判定和不可判定结果(Decidability and Undecidability Results)</h1><blockquote>
+<p>Here we consider decidability and complexity of various problems involving one-way QFAs whose transitions are defined using computable numbers or a subset of computable numbers.(e.g. rational or algebraic numbers)</p>
+</blockquote>
+<ol>
+<li><p><strong>等价性和最小化问题(Equivalence and Minimization)</strong></p>
+<ul>
+<li>如果两个自动机 $\mathcal{A}_1$ 和 $\mathcal{A}<em>2$ 对于所有输入字符串 $s\in \Sigma^*$ 都有 $f</em>{\mathcal{A}<em>1}(s)&#x3D;f</em>{\mathcal{A}<em>2}(s)$，那么我们就称这两个自动机等价；如果对于任何长度上限为 $l$ 的输入字符串 $s\in \Sigma^*$ 都有$f</em>{\mathcal{A}<em>1}(s)&#x3D;f</em>{\mathcal{A}_2}(s)$，那么我们就称这两个自动机$l$-等价。</li>
+<li>已知对于 <strong>GFA</strong> 而言，任意两个 状态数目分别为 $n_1$ 和 $n_2$ 的<strong>GFA</strong>s $\mathcal{G}_1$ 和 $\mathcal{G}_2$ 是等价的，当且仅当它们两个是 $(n_1+n_2-1)$-等价的。</li>
+<li>任何状态数为 $n$ 的 <strong>1QFA</strong> 能够由状态数目为 $n^2$ 的 <strong>GFA</strong> 互模拟，因此任意两个状态数为 $n_1$ 和 $n_2$ 的 <strong>1QFA</strong>s $\mathcal{M}_1$ 和 $\mathcal{M}_2$ 等价，当且仅当它们是 $n_1^2+n_2^2-1$-等价的。</li>
+<li>可以在多项式时间内验证两个振幅是有理数的 <strong>1QFA</strong>s 之间的等价性。 </li>
+<li>振幅是代数数(algebraic numbers)的 <strong>1QFA</strong> 的最小化问题是可判定的。</li>
+<li>如果 <strong>1QFA</strong> 的转移算子是有理数(rational numbers) ，那么最小化量子自动机的问题可以在指数空间内解决。</li>
+<li>对于识别 <em>unary periodic language</em> 的 <strong>MCQFA</strong> 的最小化问题能够在指数时间内解决。</li>
+</ul>
+</li>
+<li><p><strong>空集问题和孤立切割点相关问题(Emptiness Problems and Problems Regarding Isolated Cutpoint)</strong></p>
+</li>
+</ol>
+<blockquote>
+<p>We continue with five emptiness problems and two problems regarding isolated cutpoints. Let $\mathcal{A}$ be an automaton and $\lambda$ be a cutpoint.</p>
+</blockquote>
+<ol>
+<li>Given $\mathcal{A}$ and $\lambda \in [0,1]$, is there any $w\in \Sigma^*$, $f_{\mathcal{A}}(w)\ge \lambda$?</li>
+<li>Given $\mathcal{A}$ and $\lambda \in [0,1]$, is there any $w\in \Sigma^*$, $f_{\mathcal{A}}(w)\le \lambda$?</li>
+<li>Given $\mathcal{A}$ and $\lambda \in [0,1]$, is there any $w\in \Sigma^*$, $f_{\mathcal{A}}(w)&#x3D; \lambda$?</li>
+<li>Given $\mathcal{A}$ and $\lambda \in [0,1]$, is there any $w\in \Sigma^*$, $f_{\mathcal{A}}(w)&gt; \lambda$?</li>
+<li>Given $\mathcal{A}$ and $\lambda \in [0,1]$, is there any $w\in \Sigma^*$, $f_{\mathcal{A}}(w)&lt; \lambda$?</li>
+<li>Given $\mathcal{A}$ and $\lambda \in (0,1)$, is the cutpoint isolated?</li>
+<li>Given $\mathcal{A}$, is there a cutpoint $\lambda’$ which is isolated?</li>
+</ol>
+<p>All of these problems are known to be undecidable for <strong>1PFA</strong>s with rational-valued transitions and rational cutpoints.</p>
+<p>Problems 1-6 are undecidable for general <strong>1QFA</strong>s with rational-valued transitions and rational cutpoints,<br>and Problem 7 is undecidable for general <strong>1QFA</strong>s with rational-valued transitions.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Quantum-Automata/" rel="tag"># Quantum Automata</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/03/15/Quantum-Automata/" rel="next" title="Quantum finite automata:survey, status and research directions">
+                <i class="fa fa-chevron-left"></i> Quantum finite automata:survey, status and research directions
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/02/14/Quantum-Machine-Learning/" rel="prev" title="Quantum-Machine-Learning">
+                Quantum-Machine-Learning <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/wanzi.jpeg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/melonysuga" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:scsse_fjl2015@126.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8F%E5%AD%90%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">量子有限自动机模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8F%E5%AD%90%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA%E5%92%8C%E7%BB%8F%E5%85%B8%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%A8%A1%E6%8B%9F%E5%85%B3%E7%B3%BB"><span class="nav-number">2.</span> <span class="nav-text">量子有限自动机和经典有限自动机之间的互模拟关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%8F%E5%85%B8%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA%E5%9B%9E%E9%A1%BE"><span class="nav-number">2.1.</span> <span class="nav-text">经典有限自动机回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E8%A8%80%E8%AF%86%E5%88%AB-Language-recognition"><span class="nav-number">2.2.</span> <span class="nav-text">语言识别(Language recognition)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E6%A8%A1%E6%8B%9F"><span class="nav-number">2.3.</span> <span class="nav-text">互模拟</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E7%BA%A7%E9%99%8D%E4%BD%8E%E7%8A%B6%E6%80%81%E6%95%B0%E7%9B%AE"><span class="nav-number">3.</span> <span class="nav-text">指数级降低状态数目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prime-Language"><span class="nav-number">3.1.</span> <span class="nav-text">Prime Language</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Succinctness-results"><span class="nav-number">3.2.</span> <span class="nav-text">Succinctness results</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E9%99%90%E5%88%B6%E6%A8%A1%E5%9E%8B%E4%BB%A5%E6%9C%89%E7%95%8C%E8%AF%AF%E5%B7%AE%E8%AF%86%E5%88%AB%E8%AF%AD%E8%A8%80%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">各限制模型以有界误差识别语言的能力</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A0%E7%95%8C%E8%AF%AF%E5%B7%AE%E3%80%81%E9%9D%9E%E7%A1%AE%E5%AE%9A%E6%80%A7%E5%92%8C%E4%BA%A4%E6%9B%BF-Unbounded-error-Nondeterminism-and-Alternation"><span class="nav-number">5.</span> <span class="nav-text">无界误差、非确定性和交替(Unbounded-error, Nondeterminism, and Alternation)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E5%88%A4%E5%AE%9A%E5%92%8C%E4%B8%8D%E5%8F%AF%E5%88%A4%E5%AE%9A%E7%BB%93%E6%9E%9C-Decidability-and-Undecidability-Results"><span class="nav-number">6.</span> <span class="nav-text">可判定和不可判定结果(Decidability and Undecidability Results)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zero-Star</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
